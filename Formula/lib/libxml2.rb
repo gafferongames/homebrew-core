@@ -1,6 +1,7 @@
 class Libxml2 < Formula
   desc "GNOME XML library"
   homepage "http://xmlsoft.org/"
+  # FIXME: testing only
   url "https://download.gnome.org/sources/libxml2/2.15/libxml2-2.15.3.tar.xz"
   sha256 "78262a6e7ac170d6528ebfe2efccdf220191a5af6a6cd61ea4a9a9a5042c7a07"
   license "MIT"
