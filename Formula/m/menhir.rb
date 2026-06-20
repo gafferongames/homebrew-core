@@ -4,6 +4,7 @@ class Menhir < Formula
   url "https://gitlab.inria.fr/fpottier/menhir/-/archive/20260209/menhir-20260209.tar.bz2"
   sha256 "06f6e571aadd7d66cc3da808052d9a65f8be96fe27e0ad7e57bbbf8c20f4a832"
   license "GPL-3.0-or-later"
+  revision 1
 
   bottle do
     sha256 cellar: :any,                 arm64_tahoe:   "1862c8df45f52dc404b17fe9273be393cd9a95915f2d286f27f9319fb0e3371a"
