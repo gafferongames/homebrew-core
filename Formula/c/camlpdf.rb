@@ -4,6 +4,7 @@ class Camlpdf < Formula
   url "https://github.com/johnwhitington/camlpdf/archive/refs/tags/v2.9.1.tar.gz"
   sha256 "08e13a341362fb586a8bb02daf85fc1ef62250b63e6b58812b9c361e3d1c9951"
   license "LGPL-2.1-only" => { with: "OCaml-LGPL-linking-exception" }
+  revision 1
 
   bottle do
     sha256 cellar: :any,                 arm64_tahoe:   "aa896a33737039b1138992fbe9d116ed0408771bbd6c8607bd5179f608de775e"
