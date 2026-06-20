@@ -4,6 +4,7 @@ class Cpdf < Formula
   url "https://github.com/johnwhitington/cpdf-source/archive/refs/tags/v2.9.1.tar.gz"
   sha256 "8f96f92b2b19b42a6ee3aeb5986e7223a9fcfc8c65e534b6b45cb9525251ca80"
   license "AGPL-3.0-only"
+  revision 1
 
   bottle do
     sha256 cellar: :any, arm64_tahoe:   "37bcc7e29c86c7fdc51113f4ab25638d86ac204174774d2f56800b488919803a"
