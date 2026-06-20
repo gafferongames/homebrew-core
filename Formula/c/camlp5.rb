@@ -4,6 +4,7 @@ class Camlp5 < Formula
   url "https://github.com/camlp5/camlp5/archive/refs/tags/8.05.02.tar.gz"
   sha256 "ceceb2377563f5483738090b614447536daa4cea119dc768a0659543727b4497"
   license "BSD-3-Clause"
+  revision 1
   head "https://github.com/camlp5/camlp5.git", branch: "master"
 
   livecheck do
@@ -36,10 +37,16 @@ class Camlp5 < Formula
     system "opam", "init", "--compiler=ocaml-system", "--disable-sandboxing", "--no-setup"
     system "opam", "install", ".", "--deps-only", "--yes", "--no-depexts"
 
-    system "./configure", "--prefix", prefix, "--mandir", man
+    # OCaml 5.5.0 dropped `CAML_LD_LIBRARY_PATH` from the `ocaml` opam package's
+    # `setenv`, so with an `ocaml-system` switch the bytecode linker can no longer
+    # find opam-installed C stubs (e.g. dllpcre2_stubs.so) at link time.
+    # https://github.com/ocaml/opam-repository/issues/16406
+    ENV.prepend_path "CAML_LD_LIBRARY_PATH", opamroot/"ocaml-system/lib/stublibs"
+
+    system "./configure", "--prefix", prefix, "--libdir", lib/"ocaml", "--mandir", man
     system "opam", "exec", "--", "make", "world.opt"
     system "opam", "exec", "--", "make", "install"
-    (lib/"camlp5").install "etc/META"
+    (lib/"ocaml/camlp5").install "etc/META"
     libexec.install opamroot/"ocaml-system/lib/stublibs/dllpcre2_stubs.so"
     bin.env_script_all_files libexec, CAML_LD_LIBRARY_PATH: libexec
   end
@@ -52,9 +59,9 @@ class Camlp5 < Formula
       # ocaml files are in sync with the camlp5 files.  If camlp5 has been
       # compiled with an older version of the ocaml compiler, then an error
       # "interface mismatch" will occur.
-      shell_output("#{bin}/camlp5 #{lib}/camlp5/pa_o.cmo " \
-                   "#{lib}/camlp5/o_keywords.cmo " \
-                   "#{lib}/camlp5/pr_o.cmo " \
+      shell_output("#{bin}/camlp5 #{lib}/ocaml/camlp5/pa_o.cmo " \
+                   "#{lib}/ocaml/camlp5/o_keywords.cmo " \
+                   "#{lib}/ocaml/camlp5/pr_o.cmo " \
                    "#{ocaml.opt_lib}/ocaml/str/str.cma hi.ml")
   end
 end
