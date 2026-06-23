@@ -5,6 +5,7 @@ class RocqElpi < Formula
   url "https://github.com/LPCIC/coq-elpi/releases/download/v3.4.0/rocq-elpi-3.4.0.tar.gz"
   sha256 "fe81750ca2e5f5976f16e658979a133cfaa2011ae5591e552a1222ceaacaaf06"
   license "LGPL-2.1-or-later"
+  revision 1
   compatibility_version 2
 
   livecheck do
@@ -57,6 +58,20 @@ class RocqElpi < Formula
     libexec.install_symlink libexec.glob("ocaml-system/*")
 
     ENV["OCAMLFIND_CONF"] = libexec/"lib/findlib.conf"
+
+    # dune 3.24 replaced the Coq build language with the Rocq build language.
+    dune_files = buildpath.glob("**/dune") << (buildpath/"dune-project")
+    {
+      "(lang dune 3.13)" => "(lang dune 3.24)",
+      "(using coq 0.8)"  => "(using rocq 0.11)",
+      "(coq (flags"      => "(rocq (flags",
+      "coq.theory"       => "rocq.theory",
+      "coq.pp"           => "rocq.pp",
+      "%{coq:"           => "%{rocq:",
+    }.each do |before, after|
+      inreplace dune_files.select { |f| f.read.include?(before) }, before, after
+    end
+
     system "dune", "build", "-p", name, "@install"
     system "dune", "install", name, "--prefix=#{prefix}",
                                     "--libdir=#{lib}/ocaml",
