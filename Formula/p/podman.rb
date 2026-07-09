@@ -4,6 +4,7 @@ class Podman < Formula
   url "https://github.com/podman-container-tools/podman/archive/refs/tags/v6.0.1.tar.gz"
   sha256 "4829d7c1423523a6a4d5537dea7968ae7f6c22ed7f1d5f416638fd81c83caa47"
   license all_of: ["Apache-2.0", "GPL-3.0-or-later"]
+  revision 1
   compatibility_version 1
   head "https://github.com/podman-container-tools/podman.git", branch: "main"
 
@@ -90,6 +91,17 @@ class Podman < Formula
       url "https://github.com/containers/aardvark-dns/archive/refs/tags/v2.0.0.tar.gz"
       sha256 "d3f5d6b3be3c2d80e8257fb9467e34ff104f299474427979454034dca6dc88cc"
     end
+  end
+
+  # Starting in podman 6.0.0, libkrun (via krunkit) is the default machine
+  # driver on macOS. krunkit is not yet available in homebrew-core, so continue
+  # using the previous default driver applehv.
+  #
+  # See https://github.com/Homebrew/homebrew-core/issues/291552
+  # Remove once krunkit is available in homebrew-core.
+  patch do
+    file "Patches/podman/revert-libkrun-default.patch"
+    type :unofficial
   end
 
   def install
@@ -210,6 +222,12 @@ class Podman < Formula
       # See https://github.com/Homebrew/homebrew-core/pull/166471
       out = shell_output("#{bin}/podman-remote machine init homebrew-testvm")
       assert_match "Machine init complete", out
+
+      # Remove once krunkit is available and we follow the upstream behavior of using it
+      # by default
+      configdir = shell_output("#{bin}/podman-remote machine inspect homebrew-testvm --format {{.ConfigDir.Path}}")
+      assert_equal testpath/".config/containers/podman/machine/applehv", configdir
+
       system bin/"podman-remote", "machine", "rm", "-f", "homebrew-testvm"
     else
       assert_equal %w[podman podman-remote podmansh]
