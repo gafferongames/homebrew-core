@@ -1,9 +1,10 @@
 class LibtorrentRasterbar < Formula
   desc "C++ bittorrent library with Python bindings"
   homepage "https://www.libtorrent.org/"
-  url "https://github.com/arvidn/libtorrent/releases/download/v2.0.13/libtorrent-rasterbar-2.0.13.tar.gz"
-  sha256 "892cb75c06318e2420de0faf9f63a908069d3d237676e2459fd30abe0cb3b1bf"
+  url "https://github.com/arvidn/libtorrent/releases/download/v2.1.0/libtorrent-rasterbar-2.1.0.tar.gz"
+  sha256 "ceed657606b8df453ec5e775326e3c759a2779e1202fa04abe42ed262e7bf0b6"
   license "BSD-3-Clause"
+  compatibility_version 1
   head "https://github.com/arvidn/libtorrent.git", branch: "RC_2_0"
 
   livecheck do
@@ -36,11 +37,13 @@ class LibtorrentRasterbar < Formula
     inreplace "bindings/python/CMakeLists.txt", "${_PYTHON3_SITE_ARCH}", site_packages
 
     args = %W[
-      -DCMAKE_CXX_STANDARD=14
+      -DCMAKE_CXX_STANDARD=17
       -Dencryption=ON
       -Dpython-bindings=ON
       -Dpython-egg-info=ON
       -DCMAKE_INSTALL_RPATH=#{lib}
+      -DNO_EXAMPLES=ON
+      -DNO_TESTS=ON
     ]
 
     system "cmake", "-S", ".", "-B", "build", *std_cmake_args, *args
@@ -51,10 +54,11 @@ class LibtorrentRasterbar < Formula
 
   test do
     args = [
-      "-I#{Formula["boost"].include}/boost",
+      "-I#{Formula["boost"].include}",
       "-L#{Formula["boost"].lib}",
       "-I#{include}",
       "-L#{lib}",
+      "-DTORRENT_USE_OPENSSL",
       "-lpthread",
       "-ltorrent-rasterbar",
     ]
@@ -69,7 +73,7 @@ class LibtorrentRasterbar < Formula
     end
 
     system ENV.cxx, libexec/"examples/make_torrent.cpp",
-                    "-std=c++14", *args, "-o", "test"
+                    "-std=c++17", *args, "-o", "test"
     system "./test", test_fixtures("test.mp3"), "-o", "test.torrent"
     assert_path_exists testpath/"test.torrent"
 
