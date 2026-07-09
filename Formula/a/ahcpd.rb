@@ -29,6 +29,8 @@ class Ahcpd < Formula
 
   patch :DATA
 
+  deny_network_access! [:build, :postinstall]
+
   def install
     if OS.mac?
       # LDLIBS='' fixes: ld: library not found for -lrt
