@@ -4,6 +4,7 @@ class Btfs < Formula
   url "https://github.com/johang/btfs/archive/refs/tags/v3.1.tar.gz"
   sha256 "c363f04149f97baf1c5e10ac90677b8309724f2042ab045a45041cfb7b44649b"
   license "GPL-3.0-only"
+  revision 1
   head "https://github.com/johang/btfs.git", branch: "master"
 
   bottle do
@@ -21,7 +22,7 @@ class Btfs < Formula
   depends_on "openssl@3"
 
   def install
-    ENV.cxx11
+    inreplace "src/Makefile.am", "-std=c++14", "-std=c++17"
     system "autoreconf", "--force", "--install", "--verbose"
     system "./configure", "--disable-silent-rules", *std_configure_args
     system "make", "install"
